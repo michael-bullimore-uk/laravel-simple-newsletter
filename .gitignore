@@ -1,0 +1,5 @@
+# PhpStorm
+/.idea/
+
+# Package dev.
+/vendor/

@@ -1,0 +1,15 @@
+{
+    "name": "mibu/laravel-simple-newsletter",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Bullimore"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "MIBU\\Newsletter\\": "src"
+        }
+    }
+}
