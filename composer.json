@@ -6,10 +6,29 @@
             "name": "Michael Bullimore"
         }
     ],
-    "require": {},
     "autoload": {
         "psr-4": {
             "MIBU\\Newsletter\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MIBU\\Newsletter\\Tests\\": "tests",
+            "App\\": "stubs/app"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MIBU\\Newsletter\\NewsletterServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^7.15"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
 }

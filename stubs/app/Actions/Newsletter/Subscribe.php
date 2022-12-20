@@ -10,7 +10,7 @@ class Subscribe
 {
     public function exec(array $input): Subscriber
     {
-        // I highly recommend implementing some form of spam prevention validation (honeypot, captcha etc.) here.
+        // I highly recommend implementing some form of spam prevention (honeypot, captcha etc.) validation here.
         $data = Validator::make($input, [
             'email' => [
                 'required',
@@ -21,6 +21,9 @@ class Subscribe
 
         $data['token'] = Str::random(10);
 
-        return app(config('newsletter.model'))::create($data);
+        /** @var Subscriber $subscriber */
+        $subscriber = app(config('newsletter.model'))::create($data);
+
+        return $subscriber;
     }
 }

@@ -1,5 +1,13 @@
 # PhpStorm
 /.idea/
 
-# Package dev.
+# Composer
 /vendor/
+/composer.lock
+
+# PHPUnit
+/.phpunit.cache/
+
+# Temp
+/README.md
+/art/

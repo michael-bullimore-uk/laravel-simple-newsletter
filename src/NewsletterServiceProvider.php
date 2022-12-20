@@ -22,7 +22,7 @@ class NewsletterServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../stubs/config/newsletter.php' => config_path('newsletter.php'),
+                __DIR__.'/../config/newsletter.php' => config_path('newsletter.php'),
             ], 'newsletter-config');
 
             $this->publishes(
