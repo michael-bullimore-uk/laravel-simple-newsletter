@@ -2,14 +2,11 @@
 
 namespace MIBU\Newsletter\Tests\Feature;
 
-use Illuminate\Session\Middleware\StartSession;
-use MIBU\Newsletter\Models\Subscriber;
 use MIBU\Newsletter\Tests\TestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 class SubscribeTest extends TestCase
 {
-    public function test_subscribe()
+    public function test_subscribe_json()
     {
         $email = 'john@smith.com';
         $response = $this->json('post','/subscribe', [
@@ -22,7 +19,7 @@ class SubscribeTest extends TestCase
         $this->assertInstanceOf(config('newsletter.model'), $this->getSubscriber($email));
     }
 
-    public function test_subscribe_validation()
+    public function test_subscribe_json_validation()
     {
         $data = [
             'email' => 'john@smith.com',
@@ -35,10 +32,8 @@ class SubscribeTest extends TestCase
         ]);
     }
 
-    public function test_subscribe_()
+    public function test_subscribe()
     {
-        $this->withMiddleware(StartSession::class);
-
         $email = 'john@smith.com';
         $response = $this->post('/subscribe', [
             'email' => $email,
@@ -48,7 +43,7 @@ class SubscribeTest extends TestCase
         $this->assertInstanceOf(config('newsletter.model'), $this->getSubscriber($email));
     }
 
-    public function test_subscribe_validation_()
+    public function test_subscribe_validation()
     {
         $data = [
             'email' => 'john@smith.com',
@@ -60,10 +55,5 @@ class SubscribeTest extends TestCase
         $response->assertSessionHasErrors([
            'email',
         ], null, 'newsletter');
-    }
-
-    private function getSubscriber(string $email): Subscriber
-    {
-        return app(config('newsletter.model'))->where('email', $email)->first();
     }
 }

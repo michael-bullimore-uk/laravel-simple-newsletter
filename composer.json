@@ -13,8 +13,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "MIBU\\Newsletter\\Tests\\": "tests",
-            "App\\": "stubs/app"
+            "MIBU\\Newsletter\\Tests\\": "tests/",
+            "MIBU\\Newsletter\\Factories\\": "database/factories/",
+            "App\\": "stubs/app/"
         }
     },
     "extra": {
@@ -26,7 +27,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "orchestra/testbench": "^7.15"
+        "orchestra/testbench": "^7.15",
+        "fakerphp/faker": "^1.21"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"

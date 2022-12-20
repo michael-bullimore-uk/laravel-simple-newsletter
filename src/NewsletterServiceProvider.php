@@ -51,8 +51,8 @@ class NewsletterServiceProvider extends ServiceProvider
             ]);
         }
 
-        RateLimiter::for(config('newsletter.rate_limiter_name'), function (Request $request) {
-            return Limit::perMinute(20)->by($request->ip());
+        RateLimiter::for(config('newsletter.rate_limiter.name'), function (Request $request) {
+            return Limit::perMinute(config('newsletter.rate_limiter.per_min'))->by($request->ip());
         });
 
         AboutCommand::add('Newsletter', fn () => [

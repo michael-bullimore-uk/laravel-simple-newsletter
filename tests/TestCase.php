@@ -24,7 +24,7 @@ class TestCase extends OrchestraTestCase
     protected function defineRoutes($router)
     {
         Route::middleware([
-            'throttle:' . config('newsletter.rate_limiter_name'),
+            'throttle:' . config('newsletter.rate_limiter.name'),
         ])
             ->group(function () {
                 require __DIR__.'/../stubs/routes/newsletter.php';
@@ -36,5 +36,10 @@ class TestCase extends OrchestraTestCase
         return [
             NewsletterServiceProvider::class,
         ];
+    }
+
+    protected function getSubscriber(string $email): Subscriber
+    {
+        return app(config('newsletter.model'))->where('email', $email)->first();
     }
 }
