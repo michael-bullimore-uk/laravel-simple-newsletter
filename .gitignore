@@ -9,5 +9,7 @@
 /.phpunit.cache/
 
 # Temp
-/README.md
-/art/
+/temp/
+
+# GitHub Actions (WIP)
+/.github/

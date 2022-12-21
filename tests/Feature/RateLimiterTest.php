@@ -32,7 +32,7 @@ class RateLimiterTest extends TestCase
         }
 
         $this->withServerVariables([
-            'REMOTE_ADDR' => '1.1.1.1',
+            'REMOTE_ADDR' => '1.1.1.1', // From a diff. IP and therefore not throttled.
         ])
             ->json('get', $uri)
             ->assertSuccessful()
