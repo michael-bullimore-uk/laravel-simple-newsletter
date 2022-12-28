@@ -1,7 +1,7 @@
 name: Analyse
 
 on:
-  push:
+#  push:
 #    paths:
 #      - '**.php'
 #      - 'phpstan.neon.dist'

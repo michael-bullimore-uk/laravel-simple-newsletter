@@ -1,7 +1,7 @@
 name: CS
 
 on:
-  push:
+#  push:
 #    paths:
 #      - '**.php'
   workflow_dispatch:
