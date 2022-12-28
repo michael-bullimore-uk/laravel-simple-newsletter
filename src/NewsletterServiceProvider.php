@@ -55,8 +55,11 @@ class NewsletterServiceProvider extends ServiceProvider
             return Limit::perMinute(config('newsletter.rate_limiter.per_min'))->by($request->ip());
         });
 
-        AboutCommand::add('Newsletter', fn () => [
-            'Version' => self::VERSION,
-        ]);
+        // https://github.com/laravel/framework/blob/9.x/CHANGELOG.md#v9210---2022-07-19
+        if (method_exists(AboutCommand::class, 'add')) {
+            AboutCommand::add('Newsletter', fn () => [
+                'Version' => self::VERSION,
+            ]);
+        }
     }
 }
