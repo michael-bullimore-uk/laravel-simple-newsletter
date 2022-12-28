@@ -2,8 +2,8 @@ name: CS
 
 on:
   push:
-    paths:
-      - '**.php'
+#    paths:
+#      - '**.php'
   workflow_dispatch:
 
 jobs:

@@ -2,9 +2,9 @@ name: Analyse
 
 on:
   push:
-    paths:
-      - '**.php'
-      - 'phpstan.neon.dist'
+#    paths:
+#      - '**.php'
+#      - 'phpstan.neon.dist'
   workflow_dispatch:
 
 jobs:
