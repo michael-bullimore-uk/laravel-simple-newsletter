@@ -48,5 +48,5 @@ jobs:
       - name: List installed dependencies
         run: composer show -D
 
-      - name: Execute tests
-        run: vendor/bin/phpunit --verbose
+      - name: Run tests
+        run: composer test --verbose
