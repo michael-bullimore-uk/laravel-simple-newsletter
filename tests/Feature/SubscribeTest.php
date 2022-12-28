@@ -9,7 +9,7 @@ class SubscribeTest extends TestCase
     public function test_subscribe_json()
     {
         $email = 'john@smith.com';
-        $response = $this->json('post','/subscribe', [
+        $response = $this->json('post', '/subscribe', [
             'email' => $email,
         ]);
 
@@ -24,9 +24,9 @@ class SubscribeTest extends TestCase
         $data = [
             'email' => 'john@smith.com',
         ];
-        $this->json('post','/subscribe', $data)->assertCreated();
+        $this->json('post', '/subscribe', $data)->assertCreated();
 
-        $response = $this->json('post','/subscribe', $data);
+        $response = $this->json('post', '/subscribe', $data);
         $response->assertJsonValidationErrors([
             'email',
         ]);

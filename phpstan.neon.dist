@@ -1,0 +1,11 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: max
+    paths:
+        - config
+#        - database
+#        - src
+#        - stubs
+#        - tests

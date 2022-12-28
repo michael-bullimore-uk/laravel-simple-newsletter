@@ -10,7 +10,7 @@ class UnsubscribeTest extends TestCase
     public function test_unsubscribe_json()
     {
         $subscriber = (new SubscriberFactory())->create();
-        $this->json('get',"/unsubscribe/{$subscriber->id}/{$subscriber->token}")->assertNoContent();
+        $this->json('get', "/unsubscribe/{$subscriber->id}/{$subscriber->token}")->assertNoContent();
 
         $this->assertModelMissing($subscriber);
     }
