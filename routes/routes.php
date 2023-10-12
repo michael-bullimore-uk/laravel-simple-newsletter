@@ -4,6 +4,7 @@ use App\Actions\Newsletter\Subscribe;
 use App\Actions\Newsletter\Unsubscribe;
 use App\Actions\Newsletter\Verify;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 Route::post('/subscribe', function (Request $request) {
     app(Subscribe::class)->exec($request->all());
 
-    // Remember to not expose the token to the user - they may not be who they say they are!
     if ($request->expectsJson()) {
         return response()->json([], Response::HTTP_CREATED);
     }

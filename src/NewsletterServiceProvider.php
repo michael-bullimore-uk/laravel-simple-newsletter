@@ -6,6 +6,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use MIBU\Newsletter\Console\PurgeSubscribersCommand;
 
@@ -34,7 +35,7 @@ class NewsletterServiceProvider extends ServiceProvider
 
             $this->publishes(
                 [
-                    __DIR__.'/../stubs/routes/newsletter.php' => base_path('routes/newsletter.php'),
+                    __DIR__ . '/../stubs/routes/newsletter.php' => base_path('routes/newsletter.php'),
                 ],
                 'newsletter-routes',
             );
@@ -42,24 +43,36 @@ class NewsletterServiceProvider extends ServiceProvider
             $this->publishes(
                 [
                     __DIR__.'/../stubs/app/Actions' => app_path('Actions'),
+                    __DIR__.'/../stubs/app/Providers' => app_path('Providers'),
                 ],
-                'newsletter-actions',
+                'newsletter-src',
             );
+
+            // https://github.com/laravel/framework/blob/9.x/CHANGELOG.md#v9210---2022-07-19
+            if (method_exists(AboutCommand::class, 'add')) {
+                AboutCommand::add('Newsletter', fn () => [
+                    // 'Foo' => '<fg=yellow;options=bold>ENABLED</>',
+                    'Version' => self::VERSION,
+                ]);
+            }
 
             $this->commands([
                 PurgeSubscribersCommand::class,
             ]);
         }
 
-        RateLimiter::for(config('newsletter.rate_limiter.name'), function (Request $request) {
-            return Limit::perMinute(config('newsletter.rate_limiter.per_min'))->by($request->ip());
-        });
+        if (Newsletter::$registersRoutes) {
+            RateLimiter::for(config('newsletter.routes.rate_limiter.name'), function (Request $request) {
+                return Limit::perMinute(config('newsletter.routes.rate_limiter.per_min'))->by($request->ip());
+            });
 
-        // https://github.com/laravel/framework/blob/9.x/CHANGELOG.md#v9210---2022-07-19
-        if (method_exists(AboutCommand::class, 'add')) {
-            AboutCommand::add('Newsletter', fn () => [
-                'Version' => self::VERSION,
-            ]);
+            Route::group([
+                'middleware' => config('newsletter.routes.middleware'),
+                'name' => config('newsletter.routes.name_prefix'),
+                'prefix' => config('newsletter.routes.prefix'),
+            ], function () {
+                $this->loadRoutesFrom(__DIR__.'/../routes/routes.php');
+            });
         }
     }
 }

@@ -12,6 +12,8 @@ class VerifyTest extends TestCase
     public function test_verify_json()
     {
         $subscriber = (new SubscriberFactory())->create();
+        $this->assertNull($subscriber->verified_at);
+
         $this->json('get', "/verify/{$subscriber->id}/{$subscriber->token}")->assertNoContent();
 
         $subscriber->refresh();
