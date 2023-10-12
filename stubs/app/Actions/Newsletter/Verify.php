@@ -2,6 +2,8 @@
 
 namespace App\Actions\Newsletter;
 
+use Illuminate\Support\Facades\Hash;
+use MIBU\Newsletter\Events\SubscriberVerified;
 use MIBU\Newsletter\Models\Subscriber;
 
 class Verify
@@ -10,6 +12,7 @@ class Verify
     {
         $subscriber = app(config('newsletter.model'))->findOrFail($id);
 
+        // Hash::check($token, $subscriber->token);
         if ($subscriber->token !== $token) {
             abort(418);
         }
@@ -18,6 +21,7 @@ class Verify
             $subscriber->update([
                 'verified_at' => now(),
             ]);
+            event(new SubscriberVerified($subscriber));
         }
 
         return $subscriber;

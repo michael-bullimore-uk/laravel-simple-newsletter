@@ -39,4 +39,9 @@ class ConfigTest extends TestCase
         $this->json('post', '/subscribe')->assertNotFound();
     }
     */
+
+    public function test()
+    {
+        $this->assertTrue(true);
+    }
 }

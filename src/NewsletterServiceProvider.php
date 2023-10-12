@@ -5,10 +5,14 @@ namespace MIBU\Newsletter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use MIBU\Newsletter\Console\PurgeSubscribersCommand;
+use MIBU\Newsletter\Events\Subscribed;
+use MIBU\Newsletter\Listeners\Foo;
+use MIBU\Newsletter\Models\Subscriber;
 
 class NewsletterServiceProvider extends ServiceProvider
 {
@@ -21,6 +25,9 @@ class NewsletterServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $viewsPath = __DIR__.'/../stubs/resources/views';
+        $this->loadViewsFrom($viewsPath, 'newsletter');
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/newsletter.php' => config_path('newsletter.php'),
@@ -35,18 +42,14 @@ class NewsletterServiceProvider extends ServiceProvider
 
             $this->publishes(
                 [
-                    __DIR__ . '/../stubs/routes/newsletter.php' => base_path('routes/newsletter.php'),
+                    __DIR__.'/../stubs/app/Actions' => app_path('Actions'),
                 ],
-                'newsletter-routes',
+                'newsletter-actions',
             );
 
-            $this->publishes(
-                [
-                    __DIR__.'/../stubs/app/Actions' => app_path('Actions'),
-                    __DIR__.'/../stubs/app/Providers' => app_path('Providers'),
-                ],
-                'newsletter-src',
-            );
+            $this->publishes([
+                $viewsPath => resource_path('views/vendor/newsletter'),
+            ], 'newsletter-views');
 
             // https://github.com/laravel/framework/blob/9.x/CHANGELOG.md#v9210---2022-07-19
             if (method_exists(AboutCommand::class, 'add')) {
@@ -67,12 +70,14 @@ class NewsletterServiceProvider extends ServiceProvider
             });
 
             Route::group([
+                'as' => config('newsletter.routes.as'),
                 'middleware' => config('newsletter.routes.middleware'),
-                'name' => config('newsletter.routes.name_prefix'),
                 'prefix' => config('newsletter.routes.prefix'),
             ], function () {
                 $this->loadRoutesFrom(__DIR__.'/../routes/routes.php');
             });
         }
+
+        Event::listen(Subscribed::class, Foo::class);
     }
 }

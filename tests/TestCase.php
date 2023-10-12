@@ -11,7 +11,8 @@ class TestCase extends OrchestraTestCase
     protected function defineEnvironment($app)
     {
         $app['config']->set([
-            'database.default' => 'testing'
+            'database.default' => 'testing',
+            'mail.default' => 'log',
         ]);
 
         $app['config']->set('newsletter', require __DIR__.'/../config/newsletter.php');
