@@ -1,8 +1,10 @@
 name: Tests
 
 on:
-  # push:
-  # pull_request:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -15,12 +17,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         php: [8.2, 8.1]
-        laravel: [9.*]
+        laravel: [10]
         stability: [prefer-lowest, prefer-stable]
-        include:
-          - laravel: 9.*
-            testbench: 7.*
-            carbon: ^2.63
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
@@ -32,17 +30,14 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          extensions: dom, curl, libxml, mbstring, zip
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
           coverage: none
-
-      - name: Setup problem matchers
-        run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.carbon }}" --no-interaction --no-update
+          composer require "illuminate/contracts=^${{ matrix.laravel }}" --dev --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: List installed dependencies
