@@ -21,7 +21,7 @@ Route::post('/subscribe', function (Request $request) {
     return redirect('/');
 })->name('subscribe');
 
-Route::get('/verify/{id}/{token}', function (int $id, string $token, Request $request) {
+Route::get('/verify/{id}/{token}', function (string $id, string $token, Request $request) {
     app(Verify::class)->exec($id, $token);
 
     if ($request->expectsJson()) {
@@ -31,7 +31,8 @@ Route::get('/verify/{id}/{token}', function (int $id, string $token, Request $re
     return redirect('/');
 })->name('verify');
 
-Route::get('/unsubscribe/{hashId}/{token}', function (int $id, string $token, Request $request) {
+// {hashId}
+Route::get('/unsubscribe/{id}/{token}', function (string $id, string $token, Request $request) {
     app(Unsubscribe::class)->exec($id, $token);
 
     if ($request->expectsJson()) {

@@ -19,19 +19,21 @@ class Subscribe
             'email' => [
                 'required',
                 ...Email::defaults(),
-                // ...Honeypot::defaults(),
-                'unique:'.config('newsletter.table_name'),
+                // 'unique:'.config('newsletter.table_name'), // Let's not expose existence of an email addy.
             ],
+            // 'topyenoh' => Honeypot::defaults(),
         ])->validateWithBag('newsletter'); // {{ $errors->newsletter->first('email') }}
 
-        $data['token'] = Hash::make($plainTextToken = Str::random(), [
-            'rounds' => 12,
-        ]);
-        $data['token'] = $plainTextToken;
+        $data['token'] = Str::random(16); // Explicit length
 
-        /** @var Subscriber $subscriber */
-        $subscriber = app(config('newsletter.model'))::create($data);
-        event(new Subscribed($subscriber)); // $plainTextToken
+        $model = config('newsletter.model');
+        /** @var null|Subscriber $subscriber */
+        $subscriber = $model::email($data['email'])->first();
+        if (! $subscriber) {
+            /** @var Subscriber $subscriber */
+            $subscriber = app($model)::create($data);
+            event(new Subscribed($subscriber, $data['token']));
+        }
 
         return $subscriber;
     }

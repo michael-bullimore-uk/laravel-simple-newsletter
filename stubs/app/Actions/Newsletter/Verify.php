@@ -8,12 +8,11 @@ use MIBU\Newsletter\Models\Subscriber;
 
 class Verify
 {
-    public function exec(int $id, string $token): Subscriber
+    public function exec(string $id, string $token): Subscriber
     {
         $subscriber = app(config('newsletter.model'))->findOrFail($id);
 
-        // Hash::check($token, $subscriber->token);
-        if ($subscriber->token !== $token) {
+        if (! $subscriber->isValidToken($token)) {
             abort(418);
         }
 

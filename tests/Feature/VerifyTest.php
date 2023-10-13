@@ -11,10 +11,13 @@ class VerifyTest extends TestCase
 {
     public function test_verify_json()
     {
-        $subscriber = (new SubscriberFactory())->create();
+        [
+            $subscriber,
+            $plainTextToken,
+        ] = $this->createSubscriber();
         $this->assertNull($subscriber->verified_at);
 
-        $this->json('get', "/verify/{$subscriber->id}/{$subscriber->token}")->assertNoContent();
+        $this->json('get', "/verify/{$subscriber->id}/{$plainTextToken}")->assertNoContent();
 
         $subscriber->refresh();
         $this->assertInstanceOf(DateTime::class, $subscriber->verified_at);
@@ -22,15 +25,21 @@ class VerifyTest extends TestCase
 
     public function test_verify_json_invalid()
     {
-        $subscriber = (new SubscriberFactory())->create();
-        $this->json('get', "/verify/0/{$subscriber->token}")->assertNotFound();
+        [
+            $subscriber,
+            $plainTextToken,
+        ] = $this->createSubscriber();
+        $this->json('get', "/verify/0/{$plainTextToken}")->assertNotFound();
         $this->json('get', "/verify/{$subscriber->id}/foo")->assertStatus(Response::HTTP_I_AM_A_TEAPOT);
     }
 
     public function test_verify()
     {
-        $subscriber = (new SubscriberFactory())->create();
-        $this->get("/verify/{$subscriber->id}/{$subscriber->token}")->assertRedirect();
+        [
+            $subscriber,
+            $plainTextToken,
+        ] = $this->createSubscriber();
+        $this->get("/verify/{$subscriber->id}/{$plainTextToken}")->assertRedirect();
 
         $subscriber->refresh();
         $this->assertInstanceOf(DateTime::class, $subscriber->verified_at);

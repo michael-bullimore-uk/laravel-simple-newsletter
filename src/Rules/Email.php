@@ -7,7 +7,7 @@ class Email
     public static function defaults(): array
     {
         return [
-            'email:rfc,dns'
+            'email:rfc,dns',
         ];
     }
 }

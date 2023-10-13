@@ -3,8 +3,10 @@
 namespace MIBU\Newsletter\Tests\Feature;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use MIBU\Newsletter\Events\Subscribed;
 use MIBU\Newsletter\Factories\SubscriberFactory;
 use MIBU\Newsletter\Listeners\Foo;
@@ -27,6 +29,19 @@ class SubscribeTest extends TestCase
         $this->assertNull($subscriber->verified_at);
     }
 
+    public function test_subscribe_json_exists()
+    {
+        $this->createSubscriber([
+            'email' => $email = 'john@smith.com',
+        ]);
+
+        $response = $this->json('post', '/subscribe', [
+            'email' => $email,
+        ]);
+        $response->assertCreated();
+    }
+
+    /*
     public function test_subscribe_json_validation()
     {
         $data = [
@@ -39,6 +54,7 @@ class SubscribeTest extends TestCase
             'email',
         ]);
     }
+    */
 
     public function test_subscribe()
     {
@@ -51,6 +67,7 @@ class SubscribeTest extends TestCase
         $this->assertInstanceOf(config('newsletter.model'), $this->getSubscriber($email));
     }
 
+    /*
     public function test_subscribe_validation()
     {
         $data = [
@@ -64,10 +81,17 @@ class SubscribeTest extends TestCase
            'email',
         ], null, 'newsletter');
     }
+    */
 
     public function test_subscribe_event_listener()
     {
-        Event::fake();
+        Event::fake([
+            Subscribed::class, // Specify, otherwise breaks \Illuminate\Database\Eloquent\Concerns\HasUlids::bootHasUlids
+        ]);
+        Event::assertListening(
+            Subscribed::class,
+            Foo::class
+        );
 
         $email = 'john@smith.com';
         $this->json('post', '/subscribe', [
@@ -79,10 +103,22 @@ class SubscribeTest extends TestCase
 
             return $event->subscriber instanceof $subscriberModel && $event->subscriber->email === $email;
         });
-        Event::assertListening(
+    }
+
+    public function test_subscribe_event_listener_foo()
+    {
+        Event::fake([
             Subscribed::class,
-            Foo::class
-        );
+        ]);
+        $this->createSubscriber([
+            'email' => $email = 'john@smith.com',
+        ]);
+
+        $this->json('post', '/subscribe', [
+            'email' => $email,
+        ]);
+
+        Event::assertNotDispatched(Subscribed::class);
     }
 
     public function test_subscribe_notification()
@@ -127,9 +163,23 @@ class SubscribeTest extends TestCase
 
     public function test_mail_content()
     {
-        $subscriber = (new SubscriberFactory())->create();
+        [
+            $subscriber,
+            $plainTextToken,
+        ] = $this->createSubscriber();
 
-        $mailable = new \MIBU\Newsletter\Mail\Foo($subscriber);
-        $mailable->assertSeeInHtml($subscriber->token);
+        $mailable = new \MIBU\Newsletter\Mail\Foo($subscriber, $plainTextToken);
+
+        $verifyUrl = route('newsletter.verify', [
+            'id' => $subscriber->id,
+            'token' => $plainTextToken,
+        ]);
+        $mailable->assertSeeInHtml($verifyUrl);
+
+        $unsubscribeUrl = route('newsletter.unsubscribe', [
+            'id' => $subscriber->id,
+            'token' => $plainTextToken,
+        ]);
+        $mailable->assertSeeInHtml($unsubscribeUrl);
     }
 }

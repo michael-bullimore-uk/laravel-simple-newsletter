@@ -13,7 +13,7 @@ class Foo extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public Subscriber $subscriber)
+    public function __construct(public Subscriber $subscriber, public string $plainTextToken)
     {
     }
 
@@ -30,6 +30,6 @@ class Foo extends Notification implements ShouldQueue
             ? $notifiable->routeNotificationFor('mail')
             : $notifiable->email;
 
-        return (new \MIBU\Newsletter\Mail\Foo($this->subscriber))->to($address);
+        return (new \MIBU\Newsletter\Mail\Foo($this->subscriber, $this->plainTextToken))->to($address);
     }
 }

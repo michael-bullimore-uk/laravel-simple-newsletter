@@ -2,18 +2,19 @@
 
 namespace App\Actions\Newsletter;
 
+use Illuminate\Support\Facades\Hash;
 use MIBU\Newsletter\Events\Subscribed;
 use MIBU\Newsletter\Events\Unsubscribed;
 use MIBU\Newsletter\Models\Subscriber;
 
 class Unsubscribe
 {
-    public function exec(int $id, string $token): bool|null
+    public function exec(string $id, string $token): bool|null
     {
         /** @var Subscriber $subscriber */
         $subscriber = app(config('newsletter.model'))->findOrFail($id);
 
-        if ($subscriber->token !== $token) {
+        if (! $subscriber->isValidToken($token)) {
             abort(418);
         }
 

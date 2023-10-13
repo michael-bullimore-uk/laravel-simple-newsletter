@@ -12,7 +12,7 @@ class ConfigTest extends TestCase
         config([
             'newsletter.routes.prefix' => $prefix = 'foo',
         ]);
-        $this->json('post', "/{$prefix}/subscribe")->assertFound();
+        $this->json('post', "/{$prefix}/subscribe")->assertSuccessful();
     }
 
     public function test_default_middleware()
@@ -20,7 +20,7 @@ class ConfigTest extends TestCase
         $this
             ->json('post', '/subscribe')
             ->assertHeader(
-                'X-RateLimit-Limit',
+                'X-RateLimit-Remaining',
                 config('newsletter.routes.rate_limiter.per_min') - 1,
             );
     }
@@ -30,12 +30,15 @@ class ConfigTest extends TestCase
         config([
             'newsletter.routes.middleware' => [],
         ]);
-        $this->json('post', '/subscribe')->assertHeaderMissing('X-RateLimit-Limit');
+
+        $this->json('post', '/subscribe')->dumpHeaders();
     }
 
-    public function test_disable_routes()
+    public function test_disable_routes_register()
     {
-        Newsletter::ignoreRoutes();
+        config([
+            'newsletter.routes.register' => false,
+        ]);
         $this->json('post', '/subscribe')->assertNotFound();
     }
     */

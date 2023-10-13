@@ -8,9 +8,9 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create(config('newsletter.table_name'), function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id');
             $table->string('email');
-            $table->string('token', 100)->nullable();
+            $table->string('token');
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
 

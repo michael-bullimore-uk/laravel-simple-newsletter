@@ -3,6 +3,7 @@
 namespace MIBU\Newsletter\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use MIBU\Newsletter\Models\Subscriber;
 
@@ -14,7 +15,7 @@ class SubscriberFactory extends Factory
     {
         return [
             'email' => $this->faker->email(),
-            'token' => Str::random(10),
+            'token' => Str::random(16),
         ];
     }
 }
