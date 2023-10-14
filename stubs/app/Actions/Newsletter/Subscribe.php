@@ -22,7 +22,7 @@ class Subscribe
                 // 'unique:'.config('newsletter.table_name'), // Let's not expose existence of an email addy.
             ],
             // 'topyenoh' => Honeypot::defaults(),
-        ])->validateWithBag('newsletter'); // {{ $errors->newsletter->first('email') }}
+        ])->validateWithBag(config('newsletter.error_bag')); // {{ $errors->newsletter->first('email') }}
 
         $data['token'] = Str::random(16); // Explicit length
 

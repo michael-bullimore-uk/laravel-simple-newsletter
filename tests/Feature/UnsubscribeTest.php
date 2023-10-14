@@ -26,7 +26,10 @@ class UnsubscribeTest extends TestCase
             $subscriber,
             $plainTextToken,
         ] = $this->createSubscriber();
-        $this->get("/unsubscribe/{$subscriber->id}/{$plainTextToken}")->assertRedirect();
+        $this
+            ->get("/unsubscribe/{$subscriber->id}/{$plainTextToken}")
+            ->assertRedirect()
+            ->assertSessionHas('newsletter.message');
 
         $this->assertModelMissing($subscriber);
     }

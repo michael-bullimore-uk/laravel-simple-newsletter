@@ -41,47 +41,41 @@ class SubscribeTest extends TestCase
         $response->assertCreated();
     }
 
-    /*
     public function test_subscribe_json_validation()
     {
         $data = [
-            'email' => 'john@smith.com',
+            'email' => 'foo',
         ];
-        $this->json('post', '/subscribe', $data)->assertCreated();
-
-        $response = $this->json('post', '/subscribe', $data);
-        $response->assertJsonValidationErrors([
+        $this->json('post', '/subscribe', $data)->assertJsonValidationErrors([
             'email',
         ]);
     }
-    */
 
     public function test_subscribe()
     {
         $email = 'john@smith.com';
-        $response = $this->post('/subscribe', [
-            'email' => $email,
-        ]);
-        $response->assertRedirect('/');
+        $this
+            ->post('/subscribe', [
+                'email' => $email,
+            ])
+            ->assertRedirect('/')
+            ->assertSessionHas('newsletter.message');
 
         $this->assertInstanceOf(config('newsletter.model'), $this->getSubscriber($email));
     }
 
-    /*
     public function test_subscribe_validation()
     {
         $data = [
-            'email' => 'john@smith.com',
+            'email' => 'foo',
         ];
-        $this->post('/subscribe', $data)->assertRedirect();
-
-        $response = $this->post('/subscribe', $data);
-        $response->assertRedirect();
-        $response->assertSessionHasErrors([
-           'email',
-        ], null, 'newsletter');
+        $this
+            ->post('/subscribe', $data)
+            ->assertRedirect()
+            ->assertSessionHasErrors([
+                'email',
+            ], null, 'newsletter');
     }
-    */
 
     public function test_subscribe_event_listener()
     {

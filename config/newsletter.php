@@ -1,11 +1,13 @@
 <?php
 
 return [
-    'table_name' => 'subscribers',
+    'error_bag' => 'newsletter',
     'model' => \MIBU\Newsletter\Models\Subscriber::class,
+    'purge_subscribers_days' => 30, // Remove unverified subscribers
     'routes' => [
         'as' => 'newsletter.',
         'middleware' => [
+            'web',
             'throttle:newsletter',
         ],
         'prefix' => 'newsletter',
@@ -15,5 +17,5 @@ return [
         ],
         'register' => true, // Set this to `false` to disable routes if you wish to explicitly define them
     ],
-    'purge_subscribers_days' => 30, // Remove unverified subscribers
+    'table_name' => 'subscribers',
 ];

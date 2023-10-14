@@ -39,7 +39,11 @@ class VerifyTest extends TestCase
             $subscriber,
             $plainTextToken,
         ] = $this->createSubscriber();
-        $this->get("/verify/{$subscriber->id}/{$plainTextToken}")->assertRedirect();
+        $this
+            ->get("/verify/{$subscriber->id}/{$plainTextToken}")
+            ->assertRedirect()
+            ->assertSessionHas('newsletter.message');
+        ;
 
         $subscriber->refresh();
         $this->assertInstanceOf(DateTime::class, $subscriber->verified_at);

@@ -23,7 +23,10 @@ class NewsletterServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $viewsPath = __DIR__.'/../stubs/resources/views';
+        $langPath = __DIR__.'/../lang';
+        $this->loadTranslationsFrom($langPath, 'newsletter');
+
+        $viewsPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewsPath, 'newsletter');
 
         if ($this->app->runningInConsole()) {
@@ -38,16 +41,20 @@ class NewsletterServiceProvider extends ServiceProvider
                 'newsletter-migrations',
             );
 
+            $this->publishes([
+                $langPath => $this->app->langPath('vendor/newsletter'),
+            ], 'newsletter-lang');
+
+            $this->publishes([
+                $viewsPath => resource_path('views/vendor/newsletter'),
+            ], 'newsletter-views');
+
             $this->publishes(
                 [
                     __DIR__.'/../stubs/app/Actions' => app_path('Actions'),
                 ],
                 'newsletter-actions',
             );
-
-            $this->publishes([
-                $viewsPath => resource_path('views/vendor/newsletter'),
-            ], 'newsletter-views');
 
             $this->commands([
                 PurgeSubscribersCommand::class,

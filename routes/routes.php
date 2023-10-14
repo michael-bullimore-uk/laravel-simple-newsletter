@@ -18,7 +18,8 @@ Route::post('/subscribe', function (Request $request) {
         return response()->json([], Response::HTTP_CREATED);
     }
 
-    return redirect('/');
+    // back()
+    return redirect('/')->with('newsletter.message', __('newsletter::messages.subscribed'));
 })->name('subscribe');
 
 Route::get('/verify/{id}/{token}', function (string $id, string $token, Request $request) {
@@ -28,7 +29,7 @@ Route::get('/verify/{id}/{token}', function (string $id, string $token, Request 
         return response()->noContent();
     }
 
-    return redirect('/');
+    return redirect('/')->with('newsletter.message', __('newsletter::messages.verified'));
 })->name('verify');
 
 // {hashId}
@@ -39,5 +40,5 @@ Route::get('/unsubscribe/{id}/{token}', function (string $id, string $token, Req
         return response()->noContent();
     }
 
-    return redirect('/');
+    return redirect('/')->with('newsletter.message', __('newsletter::messages.unsubscribed'));
 })->name('unsubscribe');
