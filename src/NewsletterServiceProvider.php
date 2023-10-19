@@ -9,7 +9,13 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use MIBU\Newsletter\Console\PurgeSubscribersCommand;
+use MIBU\Newsletter\Contracts\SubscribeResponse as SubscribeResponseContract;
+use MIBU\Newsletter\Contracts\UnsubscribedResponse as UnsubscribedResponseContract;
+use MIBU\Newsletter\Contracts\VerifiedResponse as VerifiedResponseContract;
 use MIBU\Newsletter\Events\Subscribed;
+use MIBU\Newsletter\Http\Responses\SubscribeResponse;
+use MIBU\Newsletter\Http\Responses\UnsubscribedResponse;
+use MIBU\Newsletter\Http\Responses\VerifiedResponse;
 use MIBU\Newsletter\Listeners\SendSubscribedNotification;
 
 class NewsletterServiceProvider extends ServiceProvider
@@ -17,6 +23,10 @@ class NewsletterServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/newsletter.php', 'newsletter');
+
+        $this->app->singleton(SubscribeResponseContract::class, SubscribeResponse::class);
+        $this->app->singleton(VerifiedResponseContract::class, VerifiedResponse::class);
+        $this->app->singleton(UnsubscribedResponseContract::class, UnsubscribedResponse::class);
     }
 
     public function boot(): void
@@ -39,6 +49,7 @@ class NewsletterServiceProvider extends ServiceProvider
                 'newsletter-migrations',
             );
 
+            /*
             $this->publishes([
                 $langPath => $this->app->langPath('vendor/newsletter'),
             ], 'newsletter-lang');
@@ -46,6 +57,7 @@ class NewsletterServiceProvider extends ServiceProvider
             $this->publishes([
                 $viewsPath => resource_path('views/vendor/newsletter'),
             ], 'newsletter-views');
+            */
 
             $this->publishes(
                 [

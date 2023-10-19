@@ -25,6 +25,15 @@ class VerifyTest extends TestCase
         $this->json('get', "/verify/{$subscriber->id}")->assertForbidden();
     }
 
+    public function test_verify_json_missing()
+    {
+        $subscriber = $this->createSubscriber();
+        $verifyUrl = $subscriber->getVerifyUrl();
+        $subscriber->delete();
+
+        $this->json('get', $verifyUrl)->assertNotFound();
+    }
+
     public function test_verify()
     {
         $subscriber = $this->createSubscriber();

@@ -50,10 +50,11 @@ class SubscribeTest extends TestCase
     {
         $email = 'john@smith.com';
         $this
+            ->from($referrer = 'foo')
             ->post('/subscribe', [
                 'email' => $email,
             ])
-            ->assertRedirect('/')
+            ->assertRedirect($referrer)
             ->assertSessionHas('newsletter.message', __('newsletter::messages.subscribed'));
 
         $this->assertInstanceOf(config('newsletter.model'), $this->getSubscriber($email));

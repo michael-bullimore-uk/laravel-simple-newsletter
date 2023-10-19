@@ -12,5 +12,4 @@ class SendSubscribedNotification
         Notification::route('mail', $event->subscriber->email)
             ->notify(new \MIBU\Newsletter\Notifications\SubscribedNotification($event->subscriber));
     }
-
 }

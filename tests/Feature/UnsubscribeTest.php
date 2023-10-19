@@ -31,6 +31,15 @@ class UnsubscribeTest extends TestCase
         $this->json('get', "/unsubscribe/{$subscriber->id}")->assertForbidden();
     }
 
+    public function test_unsubscribe_json_missing()
+    {
+        $subscriber = $this->createSubscriber();
+        $unsubscribeUrl = $subscriber->getUnsubscribeUrl();
+        $subscriber->delete();
+
+        $this->json('get', $unsubscribeUrl)->assertNotFound();
+    }
+
     public function test_unsubscribe()
     {
         $subscriber = $this->createSubscriber();

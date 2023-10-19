@@ -6,17 +6,14 @@ use App\Actions\Newsletter\Verify;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\Response;
+use MIBU\Newsletter\Contracts\SubscribeResponse;
+use MIBU\Newsletter\Contracts\UnsubscribedResponse;
+use MIBU\Newsletter\Contracts\VerifiedResponse;
 
 Route::post('/subscribe', function (Request $request) {
     app(Subscribe::class)->exec($request->all());
 
-    if ($request->expectsJson()) {
-        return response()->json([], Response::HTTP_CREATED);
-    }
-
-    // back()
-    return redirect('/')->with('newsletter.message', __('newsletter::messages.subscribed'));
+    return app(SubscribeResponse::class)->toResponse($request);
 })->name('subscribe');
 
 Route::get('/verify/{id}', function (string $id, Request $request) {
@@ -26,11 +23,7 @@ Route::get('/verify/{id}', function (string $id, Request $request) {
 
     app(Verify::class)->exec($id);
 
-    if ($request->expectsJson()) {
-        return response()->noContent();
-    }
-
-    return redirect('/')->with('newsletter.message', __('newsletter::messages.verified'));
+    return app(VerifiedResponse::class)->toResponse($request);
 })->name('verify');
 
 Route::get('/unsubscribe/{id}', function (string $id, Request $request) {
@@ -40,9 +33,5 @@ Route::get('/unsubscribe/{id}', function (string $id, Request $request) {
 
     app(Unsubscribe::class)->exec($id);
 
-    if ($request->expectsJson()) {
-        return response()->noContent();
-    }
-
-    return redirect('/')->with('newsletter.message', __('newsletter::messages.unsubscribed'));
+    return app(UnsubscribedResponse::class)->toResponse($request);
 })->name('unsubscribe');
