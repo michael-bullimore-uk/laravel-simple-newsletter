@@ -2,9 +2,7 @@
 
 namespace App\Actions\Newsletter;
 
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use MIBU\Newsletter\Events\Subscribed;
 use MIBU\Newsletter\Models\Subscriber;
 use MIBU\Newsletter\Rules\Email;
@@ -24,15 +22,15 @@ class Subscribe
             // 'topyenoh' => Honeypot::defaults(),
         ])->validateWithBag(config('newsletter.error_bag')); // {{ $errors->newsletter->first('email') }}
 
-        $data['token'] = Str::random(16); // Explicit length
-
         $model = config('newsletter.model');
+
         /** @var null|Subscriber $subscriber */
         $subscriber = $model::email($data['email'])->first();
         if (! $subscriber) {
             /** @var Subscriber $subscriber */
             $subscriber = app($model)::create($data);
-            event(new Subscribed($subscriber, $data['token']));
+
+            event(new Subscribed($subscriber));
         }
 
         return $subscriber;

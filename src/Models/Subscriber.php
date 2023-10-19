@@ -2,13 +2,17 @@
 
 namespace MIBU\Newsletter\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 
+/**
+ * @property string $id
+ * @property string $email
+ * @property Carbon|null $verified_at
+ */
 class Subscriber extends Model
 {
     use HasUlids;
@@ -23,20 +27,23 @@ class Subscriber extends Model
         return config('newsletter.table_name', parent::getTable());
     }
 
-    protected function token(): Attribute
-    {
-        return Attribute::make(
-            set: fn (string $value) => Hash::make($value),
-        );
-    }
-
-    public function isValidToken($plainTextToken): bool
-    {
-        return Hash::check($plainTextToken, $this->token);
-    }
-
+    // We'll use a scope for this so that we can modify the behaviour if req.
     public function scopeEmail(Builder $query, string $email): void
     {
         $query->where('email', $email);
+    }
+
+    public function getVerifyUrl(): string
+    {
+        return URL::signedRoute('newsletter.verify', [
+            'id' => $this->getKey(),
+        ]);
+    }
+
+    public function getUnsubscribeUrl(): string
+    {
+        return URL::signedRoute('newsletter.unsubscribe', [
+            'id' => $this->getKey(),
+        ]);
     }
 }

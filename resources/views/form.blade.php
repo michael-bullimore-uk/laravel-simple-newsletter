@@ -12,9 +12,7 @@
         class="@error('email') is-invalid @enderror"
         id="newsletter-email"
         name="email"
-        {{--
         type="email"
-        --}}
         value="{{ old('email') }}"
     >
     @error('email', 'newsletter'){{-- Named error bag --}}

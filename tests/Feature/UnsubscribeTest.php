@@ -2,35 +2,50 @@
 
 namespace MIBU\Newsletter\Tests\Feature;
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use MIBU\Newsletter\Factories\SubscriberFactory;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use MIBU\Newsletter\Tests\TestCase;
 
 class UnsubscribeTest extends TestCase
 {
     public function test_unsubscribe_json()
     {
-        [
-            $subscriber,
-            $plainTextToken,
-        ] = $this->createSubscriber();
-        $this->json('get', "/unsubscribe/{$subscriber->id}/{$plainTextToken}")->assertNoContent();
+        $subscriber = $this->createSubscriber();
+        $this->json('get', $subscriber->getUnsubscribeUrl())->assertNoContent();
 
         $this->assertModelMissing($subscriber);
     }
 
+    /*
+    public function test_unsubscribe_json_invalid()
+    {
+        $subscriber = $this->createSubscriber();
+
+        $this->expectException(InvalidSignatureException::class);
+        $this->withoutExceptionHandling()->json('get', "/unsubscribe/{$subscriber->id}");
+    }
+    */
+
+    public function test_unsubscribe_json_invalid()
+    {
+        $subscriber = $this->createSubscriber();
+        $this->json('get', "/unsubscribe/{$subscriber->id}")->assertForbidden();
+    }
+
     public function test_unsubscribe()
     {
-        [
-            $subscriber,
-            $plainTextToken,
-        ] = $this->createSubscriber();
+        $subscriber = $this->createSubscriber();
         $this
-            ->get("/unsubscribe/{$subscriber->id}/{$plainTextToken}")
+            ->get($subscriber->getUnsubscribeUrl())
             ->assertRedirect()
-            ->assertSessionHas('newsletter.message');
+            ->assertSessionHas('newsletter.message', __('newsletter::messages.unsubscribed'));
 
         $this->assertModelMissing($subscriber);
+    }
+
+    public function test_unsubscribe_invalid()
+    {
+        $subscriber = $this->createSubscriber();
+
+        $this->get("/unsubscribe/{$subscriber->id}")->assertForbidden();
     }
 }

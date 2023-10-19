@@ -10,7 +10,6 @@ return new class () extends Migration {
         Schema::create(config('newsletter.table_name'), function (Blueprint $table) {
             $table->uuid('id');
             $table->string('email');
-            $table->string('token');
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
 

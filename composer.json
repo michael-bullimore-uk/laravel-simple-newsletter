@@ -1,9 +1,16 @@
 {
     "name": "mibu/laravel-simple-newsletter",
+    "description": "Save verified (double opt-in) email addresses to your database.",
     "license": "MIT",
+    "keywords": [
+        "laravel",
+        "simple",
+        "newsletter"
+    ],
     "authors": [
         {
-            "name": "Michael Bullimore"
+            "name": "Michael Bullimore",
+            "homepage": "https://github.com/michael-bullimore-uk"
         }
     ],
     "autoload": {

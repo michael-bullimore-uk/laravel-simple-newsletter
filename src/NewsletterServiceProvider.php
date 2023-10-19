@@ -3,7 +3,6 @@
 namespace MIBU\Newsletter;
 
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
@@ -11,8 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use MIBU\Newsletter\Console\PurgeSubscribersCommand;
 use MIBU\Newsletter\Events\Subscribed;
-use MIBU\Newsletter\Listeners\Foo;
-use MIBU\Newsletter\Models\Subscriber;
+use MIBU\Newsletter\Listeners\SendSubscribedNotification;
 
 class NewsletterServiceProvider extends ServiceProvider
 {
@@ -75,6 +73,6 @@ class NewsletterServiceProvider extends ServiceProvider
             });
         }
 
-        Event::listen(Subscribed::class, Foo::class);
+        Event::listen(Subscribed::class, SendSubscribedNotification::class);
     }
 }

@@ -5,12 +5,12 @@ namespace MIBU\Newsletter\Listeners;
 use Illuminate\Support\Facades\Notification;
 use MIBU\Newsletter\Events\Subscribed;
 
-class Foo
+class SendSubscribedNotification
 {
     public function handle(Subscribed $event): void
     {
         Notification::route('mail', $event->subscriber->email)
-            ->notify(new \MIBU\Newsletter\Notifications\Foo($event->subscriber, $event->plainTextToken));
+            ->notify(new \MIBU\Newsletter\Notifications\SubscribedNotification($event->subscriber));
     }
 
 }

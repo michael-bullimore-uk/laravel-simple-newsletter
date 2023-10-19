@@ -3,13 +3,11 @@
 namespace MIBU\Newsletter\Tests\Feature;
 
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 use MIBU\Newsletter\Events\Subscribed;
-use MIBU\Newsletter\Factories\SubscriberFactory;
-use MIBU\Newsletter\Listeners\Foo;
+use MIBU\Newsletter\Listeners\SendSubscribedNotification;
 use MIBU\Newsletter\Tests\TestCase;
 
 class SubscribeTest extends TestCase
@@ -25,28 +23,25 @@ class SubscribeTest extends TestCase
         $response->assertCreated();
 
         $this->assertInstanceOf(config('newsletter.model'), $subscriber = $this->getSubscriber($email));
-        $this->assertNotNull($subscriber->token);
         $this->assertNull($subscriber->verified_at);
     }
 
-    public function test_subscribe_json_exists()
+    public function test_subscribe_json_dup()
     {
         $this->createSubscriber([
             'email' => $email = 'john@smith.com',
         ]);
 
-        $response = $this->json('post', '/subscribe', [
+        $this->json('post', '/subscribe', [
             'email' => $email,
-        ]);
-        $response->assertCreated();
+        ])->assertCreated();
     }
 
     public function test_subscribe_json_validation()
     {
-        $data = [
+        $this->json('post', '/subscribe', [
             'email' => 'foo',
-        ];
-        $this->json('post', '/subscribe', $data)->assertJsonValidationErrors([
+        ])->assertJsonValidationErrors([
             'email',
         ]);
     }
@@ -59,18 +54,17 @@ class SubscribeTest extends TestCase
                 'email' => $email,
             ])
             ->assertRedirect('/')
-            ->assertSessionHas('newsletter.message');
+            ->assertSessionHas('newsletter.message', __('newsletter::messages.subscribed'));
 
         $this->assertInstanceOf(config('newsletter.model'), $this->getSubscriber($email));
     }
 
     public function test_subscribe_validation()
     {
-        $data = [
-            'email' => 'foo',
-        ];
         $this
-            ->post('/subscribe', $data)
+            ->post('/subscribe', [
+                'email' => 'foo',
+            ])
             ->assertRedirect()
             ->assertSessionHasErrors([
                 'email',
@@ -84,7 +78,7 @@ class SubscribeTest extends TestCase
         ]);
         Event::assertListening(
             Subscribed::class,
-            Foo::class
+            SendSubscribedNotification::class
         );
 
         $email = 'john@smith.com';
@@ -125,11 +119,11 @@ class SubscribeTest extends TestCase
         ]);
 
         Notification::assertSentOnDemand(
-            \MIBU\Newsletter\Notifications\Foo::class,
+            \MIBU\Newsletter\Notifications\SubscribedNotification::class,
             function (
-                \MIBU\Newsletter\Notifications\Foo $notification,
-                array $channels,
-                object $notifiable,
+                \MIBU\Newsletter\Notifications\SubscribedNotification $notification,
+                array                                                 $channels,
+                object                                                $notifiable,
             ) use ($email) {
                 return $notifiable->routes['mail'] === $email;
             }
@@ -157,22 +151,16 @@ class SubscribeTest extends TestCase
 
     public function test_mail_content()
     {
-        [
-            $subscriber,
-            $plainTextToken,
-        ] = $this->createSubscriber();
+        $subscriber = $this->createSubscriber();
+        $mailable = new \MIBU\Newsletter\Mail\Subscribed($subscriber);
 
-        $mailable = new \MIBU\Newsletter\Mail\Foo($subscriber, $plainTextToken);
-
-        $verifyUrl = route('newsletter.verify', [
-            'id' => $subscriber->id,
-            'token' => $plainTextToken,
+        $verifyUrl = URL::signedRoute('newsletter.verify', [
+            'id' => $subscriber->getKey(),
         ]);
         $mailable->assertSeeInHtml($verifyUrl);
 
-        $unsubscribeUrl = route('newsletter.unsubscribe', [
-            'id' => $subscriber->id,
-            'token' => $plainTextToken,
+        $unsubscribeUrl = URL::signedRoute('newsletter.unsubscribe', [
+            'id' => $subscriber->getKey(),
         ]);
         $mailable->assertSeeInHtml($unsubscribeUrl);
     }

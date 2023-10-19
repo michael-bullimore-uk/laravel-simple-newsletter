@@ -10,11 +10,11 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use MIBU\Newsletter\Models\Subscriber;
 
-class Foo extends Mailable implements ShouldQueue
+class Subscribed extends Mailable implements ShouldQueue
 {
     // use Queueable, SerializesModels;
 
-    public function __construct(public Subscriber $subscriber, public string $plainTextToken)
+    public function __construct(public Subscriber $subscriber)
     {
     }
 
@@ -28,7 +28,7 @@ class Foo extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'newsletter::emails.verify',
+            markdown: 'newsletter::emails.subscribed',
         );
     }
 }

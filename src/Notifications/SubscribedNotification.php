@@ -9,11 +9,11 @@ use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Notification;
 use MIBU\Newsletter\Models\Subscriber;
 
-class Foo extends Notification implements ShouldQueue
+class SubscribedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public Subscriber $subscriber, public string $plainTextToken)
+    public function __construct(public Subscriber $subscriber)
     {
     }
 
@@ -30,6 +30,6 @@ class Foo extends Notification implements ShouldQueue
             ? $notifiable->routeNotificationFor('mail')
             : $notifiable->email;
 
-        return (new \MIBU\Newsletter\Mail\Foo($this->subscriber, $this->plainTextToken))->to($address);
+        return (new \MIBU\Newsletter\Mail\Subscribed($this->subscriber))->to($address);
     }
 }

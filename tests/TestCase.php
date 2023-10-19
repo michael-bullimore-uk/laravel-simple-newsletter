@@ -2,11 +2,8 @@
 
 namespace MIBU\Newsletter\Tests;
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use MIBU\Newsletter\Factories\SubscriberFactory;
 use MIBU\Newsletter\Models\Subscriber;
-use MIBU\Newsletter\Newsletter;
 use MIBU\Newsletter\NewsletterServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
@@ -16,7 +13,7 @@ class TestCase extends OrchestraTestCase
     {
         $app['config']->set([
             'database.default' => 'testing',
-            'mail.default' => 'log',
+            'mail.default' => 'array',
         ]);
 
         $app['config']->set('newsletter', require __DIR__.'/../config/newsletter.php');
@@ -35,17 +32,11 @@ class TestCase extends OrchestraTestCase
         ];
     }
 
-    protected function createSubscriber(array $attributes = []): array
+    protected function createSubscriber(array $attributes = []): Subscriber
     {
-        $subscriber = (new SubscriberFactory())->create([
-            'token' => $plainTextToken = Str::random(16),
+        return (new SubscriberFactory())->create([
             ...$attributes,
         ]);
-
-        return [
-            $subscriber,
-            $plainTextToken,
-        ];
     }
 
     protected function getSubscriber(string $email): Subscriber
