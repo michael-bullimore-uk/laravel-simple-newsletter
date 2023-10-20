@@ -21,7 +21,7 @@ class Subscribed extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verify',
+            subject: __('newsletter::messages.mail.subject'),
         );
     }
 

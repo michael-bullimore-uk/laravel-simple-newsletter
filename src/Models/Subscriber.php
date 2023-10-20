@@ -33,6 +33,13 @@ class Subscriber extends Model
         $query->where('email', $email);
     }
 
+    public function scopeStale(Builder $query, int $days): void
+    {
+        $query
+            ->whereNull('verified_at')
+            ->where('created_at', '<', now()->modify("-{$days} days"));
+    }
+
     public function getVerifyUrl(): string
     {
         return URL::signedRoute('newsletter.verify', [

@@ -3,7 +3,7 @@
 return [
     'error_bag' => 'newsletter',
     'model' => \MIBU\Newsletter\Models\Subscriber::class,
-    'purge_subscribers_days' => 30, // Remove unverified subscribers
+    'purge_stale_subscribers_days' => 30, // Remove stale ("old") unverified subscribers
     'routes' => [
         'as' => 'newsletter.',
         'middleware' => [

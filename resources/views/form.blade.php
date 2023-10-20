@@ -7,7 +7,7 @@
 <form action="{{ route('newsletter.subscribe') }}" method="POST">
     @csrf
 
-    <label for="newsletter-email">Email</label>
+    <label for="newsletter-email">{{ __('newsletter::messages.email') }}</label>
     <input
         class="@error('email') is-invalid @enderror"
         id="newsletter-email"
@@ -16,6 +16,6 @@
         value="{{ old('email') }}"
     >
     @error('email', 'newsletter'){{-- Named error bag --}}
-    <div class="alert alert-danger">{{ $message }}</div>
+        <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 </form>

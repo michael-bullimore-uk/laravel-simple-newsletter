@@ -3,12 +3,13 @@
 namespace MIBU\Newsletter;
 
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use MIBU\Newsletter\Console\PurgeSubscribersCommand;
+use MIBU\Newsletter\Console\PurgeStaleSubscribersCommand;
 use MIBU\Newsletter\Contracts\SubscribeResponse as SubscribeResponseContract;
 use MIBU\Newsletter\Contracts\UnsubscribedResponse as UnsubscribedResponseContract;
 use MIBU\Newsletter\Contracts\VerifiedResponse as VerifiedResponseContract;
@@ -67,8 +68,16 @@ class NewsletterServiceProvider extends ServiceProvider
             );
 
             $this->commands([
-                PurgeSubscribersCommand::class,
+                PurgeStaleSubscribersCommand::class,
             ]);
+
+            $this->app->booted(function () {
+                /** @var Schedule $schedule */
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->command(PurgeStaleSubscribersCommand::class, [
+                    // ...
+                ])->daily();
+            });
         }
 
         if (config('newsletter.routes.register')) {
