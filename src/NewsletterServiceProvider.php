@@ -47,10 +47,12 @@ class NewsletterServiceProvider extends ServiceProvider
                 [
                     __DIR__.'/../database/migrations' => database_path('migrations'),
                 ],
-                'newsletter-migrations',
+                [
+                    'newsletter-install',
+                    'newsletter-migrations'
+                ],
             );
 
-            /*
             $this->publishes([
                 $langPath => $this->app->langPath('vendor/newsletter'),
             ], 'newsletter-lang');
@@ -58,13 +60,15 @@ class NewsletterServiceProvider extends ServiceProvider
             $this->publishes([
                 $viewsPath => resource_path('views/vendor/newsletter'),
             ], 'newsletter-views');
-            */
 
             $this->publishes(
                 [
                     __DIR__.'/../stubs/app/Actions' => app_path('Actions'),
                 ],
-                'newsletter-actions',
+                [
+                    'newsletter-install',
+                    'newsletter-actions',
+                ],
             );
 
             $this->commands([

@@ -1,6 +1,6 @@
 {
     "name": "mibu/laravel-simple-newsletter",
-    "description": "Save verified (double opt-in) email addresses to your database.",
+    "description": "A simple Laravel package to save verified user email addresses to your database - a first party solution where you have full control over the data you collect.",
     "license": "MIT",
     "keywords": [
         "laravel",
